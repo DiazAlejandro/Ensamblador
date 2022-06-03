@@ -1,0 +1,85 @@
+imprimir MACRO CADENA
+    MOV AH, 09H
+    LEA DX, CADENA
+    INT 21H
+ENDM
+;macro para llenar el arreglo
+
+leer macro arreglo
+    local llenar
+    MOV si, 0
+    llenar:     
+            MOV ah, 01h
+            INT 21h 
+            MOV arreglo[si], al
+            INC si 
+            CMP si, 4
+            JBE llenar
+endm 
+imprimir_CAR MACRO CAR
+    MOV AH, 02H
+    MOV CL, CAR
+    INT 21H
+ENDM
+
+RECUPERA_COORD MACRO NUM
+      MOV AX, NUM
+      MOV BL,8 
+      DIV BL 
+ENDM
+
+cursorPos MACRO fila, columna
+    MOV AH, 02h
+    MOV BH, 0h
+    MOV DH, fila
+    MOV DL, columna
+    INT 10h
+ENDM
+COLOREAR MACRO CAR,COLOR
+        MOV AH,09H
+        MOV AL,CAR
+        MOV BH,0
+        MOV BL,COLOR
+        MOV CX,1
+        INT 10H
+        
+        MOV BH,0
+        INC DL
+        MOV AH,2H
+        INT 10H
+ENDM
+
+.code
+LEER_CAR PROC
+    MOV AH, 01H
+    INT 21H
+    RET
+ LEER_CAR ENDP
+
+    MOUSE PROC
+      MOV AH,02h 
+      MOV DX,0000h 
+      MOV BH,00h 
+      INT 10h
+      RET
+    MOUSE ENDP
+
+    LIMPIA PROC
+      MOV AX,0600h 
+      MOV BH,0FH
+      MOV CX,0000h 
+      MOV DX, 184fh 
+      INT 10H 
+      RET
+    LIMPIA ENDP 
+    
+  ocultarPuntero PROC NEAR
+    MOV AX, 02h
+    INT 33h
+    RET
+  ocultarPuntero ENDP
+   
+  pause PROC NEAR
+    MOV AH, 07h
+    INT 21h
+  RET

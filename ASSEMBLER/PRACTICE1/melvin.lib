@@ -1,0 +1,236 @@
+TITLE LIBRERY
+.286
+
+.MODEL SMALL
+
+.STACK
+
+comienzaescaner MACRO palabra,letra
+LOCAL inicio
+CLD 								
+    MOV AL, letra
+    MOV CX, size palabra
+    LEA DI, palabra
+    MOV BL, '?'                     
+
+    inicio:
+    REPNE SCASB
+    JNZ salir                       
+    DEC DI
+    MOV [DI],BL                     
+    JMP inicio
+
+    salir:
+    comienzapintar palabra,letra
+ENDM
+
+Read_Char MACRO caracter2 
+    mov ah,01h
+    int 21h   
+    mov caracter2, al
+ENDM
+
+PRINT_CAR MACRO CAR
+    MOV AH, 02H
+    MOV DL, CAR
+    INT 21H
+ENDM
+
+impcaracter MACRO palabra,letra
+   local repetir, encontrado, salida
+   mov cx,40
+   mov contador, 40
+   lea di, palabra
+   imprimir letrero3
+   repetir:
+        
+        repne scasb 
+        je encontrado
+        jne salida
+        encontrado:
+            mov bx,cx 
+            mov bx,30h 
+            mov valor, cl
+            mov al, contador 
+            sub al, valor
+            mov posicion, al
+            add posicion, 30h
+            PRINT_CAR posicion
+            PRINT_CAR ","
+            mov al, letra
+            cmp cx, di
+            je salida
+            jmp repetir
+   ;--------------------------------------------------------    
+   
+   salida:
+ENDM
+
+comienzapintar MACRO palabra,letra
+LOCAL fin,for
+CLD
+LEA SI, palabra         
+MOV DI,0    
+;Recorremos la palabra y en donde se encuentr ? pintamos el caracter de otro color
+for:    
+    MOV AH, 02H             
+    MOV BH, 0H              
+    MOV DX, DI              
+    MOV DH,02H             
+    INT 10H
+    LODSB                   
+    CMP AL, '$'
+    JE fin
+    CMP AL, 13 
+    JE fin
+    CMP AL, 32 
+    JE fin
+    CMP AL, '?'
+    JE pintar
+    
+    MOV AH, 0AH                
+    MOV BH,0H                  
+    MOV CX,1                    
+    INT 10H             
+
+    INC DI
+JMP for
+
+pintar: 
+    MOV AH, 09H            
+    MOV AL, letra           
+    mov palabra[di],al     
+    MOV BH, 0H              
+    MOV BL, 6eH            
+    MOV CX,1                
+    INT 10H
+    INC DI
+JMP for
+fin:
+ENDM
+
+imprimir MACRO letrero
+MOV AH,09H
+LEA DX, letrero
+INT 21H 
+ENDM
+
+;metodo para posiciona el cursor 
+setLocationCursor MACRO fila, columna
+MOV AH, 02H 
+MOV BH, 0H              
+MOV DH, fila ;renglon
+MOV DL, columna ;columna
+INT 10H 
+ENDM
+
+clean MACRO 
+    MOV AH, 06H     
+    MOV AL, 0H      
+    MOV BH, 04h 
+    MOV CX, 0H
+    MOV DX, 184FH       
+    INT 10H 
+ENDM
+
+ReadWord2 MACRO cadena
+    LOCAL ciclo
+    local capturar
+    local sigue
+    local salir 
+    MOV SI, 0 
+    capturar:
+       CALL readChar
+       cmp al,13
+       jz sigue 
+       mov cadena[si],al
+       inc si
+       jmp capturar
+    sigue:
+    cmp si,40
+    jz salir
+    mov al,0
+    mov cadena[si],al
+    inc si
+    jmp sigue
+
+    salir:
+ENDM
+
+getLocationMouseX MACRO bufferCoX
+    MOV AX, CX
+    MOV BL, 8
+    DIV BL  
+    MOV bufferCoX, AL
+ENDM
+
+getLocationMouseY MACRO bufferCoY
+    MOV AX, DX
+    MOV BL, 8
+    DIV BL  
+    MOV bufferCoY, AL
+ENDM
+
+write macro cadena
+    mov ah,09h
+    lea dx,cadena
+    int 21h
+endm
+
+.DATA
+.CODE
+iniciarMouse PROC NEAR  
+    MOV AX, 0H      
+    INT 33H 
+    CMP AX, 0H     
+    JE finIniciarMouse  
+    MOV AX, 01H  
+    INT 33H     
+    MOV AX, 04H    
+    MOV CX, 0H    
+    MOV DX, 0H     
+    INT 33H
+    finIniciarMouse:
+    RET
+    ENDP
+
+
+
+    ocultarMouse PROC NEAR
+    ;ocultamos mouse
+    MOV AX, 02H
+    INT 33H
+    
+    MOV AH, 0H  
+    MOV AL, 03H 
+    INT 10H
+    RET
+    ENDP
+
+    mostrarMenu PROC NEAR
+    clean 
+    setLocationCursor 0cH,24H
+    imprimir letreroMenu
+	setLocationCursor 0dH,22H
+    imprimir letreroCadena
+    setLocationCursor 0eH,22H
+    imprimir letreroVocal  
+    setLocationCursor 0fH,22H
+    imprimir letreroSalir
+	RET
+    ENDP
+
+   readChar PROC 
+        mov ah,01h
+        int 21h
+        ret
+    readChar ENDP
+
+obtener PROC 
+        MOV AH,08H
+        MOV BH,00H
+        int 10H
+        mov letra,al
+        ret
+ENDP
+

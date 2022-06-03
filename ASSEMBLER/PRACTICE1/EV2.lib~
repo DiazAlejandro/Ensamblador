@@ -1,0 +1,78 @@
+PRINT MACRO CADENA
+    LEA DX,CADENA
+    MOV AH,09H
+    INT 21H
+ENDM
+
+PRINT_C macro CARACTER
+    mov AH, 02H
+    mov DL, CARACTER
+    int 21H
+ENDM
+
+PRINT_RC MACRO FILA, COLUMNA
+    MOV AH,02H 
+    MOV BH,00H    
+    MOV DH,FILA     
+    MOV DL,COLUMNA  
+    INT 10H
+ENDM
+
+CONVERT_COORD MACRO COORDXY, REG
+    MOV AX, REG
+    MOV BL, 8
+    DIV BL
+    MOV COORDXY, AL
+ENDM
+
+INGRESA_CAD MACRO ARREGLO
+    LOCAL LLENAR
+    MOV SI, 0
+    LLENAR:     
+        MOV AH, 01H
+        INT 21H 
+        MOV ARREGLO[SI], AL
+        INC SI 
+        CMP SI, 4
+        JBE LLENAR
+ENDM 
+
+GET_CARACTER_POSICION MACRO 
+    MOV AH, 08H 
+    MOV BH, 00H 
+    INT 10H
+ENDM
+    
+PRINT_COLOR MACRO CARACTER,COLOR
+    MOV AH,09H
+    MOV AL,CARACTER
+    MOV BH,0
+    MOV BL,COLOR
+    MOV CX,1
+    INT 10H
+ENDM
+
+.CODE
+    CLEAN PROC
+        MOV AH, 0Fh  
+        INT 10H   
+        MOV AH, 0
+        INT 10H
+        RET
+    CLEAN ENDP
+    
+    READ PROC
+        MOV AH, 01H
+        INT 21H
+        RET
+    READ ENDP
+    
+    PAUSE PROC
+        MOV AH, 07H
+        INT 21H
+        RET
+    PAUSE ENDP
+    
+    FIN:  
+        .EXIT
+        RET

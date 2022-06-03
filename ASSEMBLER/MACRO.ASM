@@ -1,0 +1,47 @@
+PRINT MACRO CADENA
+    MOV AH,09H
+    LEA DX,CADENA
+    INT 21H
+ENDM
+
+IMPRIME_CARACTER MACRO CARACTER 
+    MOV AH,02H
+    MOV DL,CARACTER
+    INT 21H
+ENDM
+
+.MODEL SMALL 
+.STACK
+.DATA
+    FRASE DB 'HOLA AMIGOS$'
+    
+.CODE
+    MAIN PROC FAR 
+        MOV AX,@DATA
+        MOV DS,AX
+
+        PRINT FRASE
+        IMPRIME_CARACTER 35H
+        IMPRIME_CARACTER 'A'
+        CALL CLSCR
+        MOV AH,4CH
+        INT 21H
+.EXIT
+MAIN ENDP
+
+    LEER_CARACTER PROC
+        MOV AH,01H
+        INT 21H
+        RET
+    ENDP
+
+    CLSCR PROC
+        MOV AH,06H
+        MOV AL,00H
+        MOV BH,12H
+        MOV CX,0000H
+        MOV DX,184FH
+        INT 10H
+        RET
+    ENDP
+END MAIN 

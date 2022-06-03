@@ -1,0 +1,218 @@
+write MACRO mensaje
+   MOV AH,09
+   LEA DX,mensaje
+   INT 21H
+   endm
+imprimir MACRO cadena
+    mov ah,09h
+    lea dx,cadena
+    int 21h
+ENDM
+posicion MACRO buffer,buffer1
+   MOV AH, 02H
+   MOV DH, buffer  ;-----fila 12
+   MOV DL, buffer1 ;-----columna 40
+    INT 10H
+    endm
+capturar MACRO cadena,tam;cadena,tamaño,
+    mov cx,tam;numero de veces a repetir
+    mov si,00
+    cicl:;ciclo para capturar cadena
+        call read; captura desde teclado
+        cmp al,13; compara si es ENTER(13)
+        jz salirr; salta a la opcion 1 SI es igual
+        mov cadena[si],al; agrega letra al arreglo
+        inc si
+    loop cicl;regresa
+    salirr:
+ENDM
+capturar1 MACRO cadena,tam;cadena,tamaño,
+    mov cx,tam;numero de veces a repetir
+    mov si,00
+    cic:;ciclo para capturar cadena
+        call read; captura desde teclado
+        cmp al,13; compara si es ENTER(13)
+        jz salirrr; salta a la opcion 1 SI es igual
+        mov cadena[si],al; agrega letra al arreglo
+        inc si
+    loop cic;regresa
+    salirrr:
+ENDM
+capturar2 MACRO cadena,tam;cadena,tamaño,
+    mov cx,tam;numero de veces a repetir
+    mov si,00
+    ci:;ciclo para capturar cadena
+        call read; captura desde teclado
+        cmp al,13; compara si es ENTER(13)
+        jz salirrrr; salta a la opcion 1 SI es igual
+        mov cadena[si],al; agrega letra al arreglo
+        inc si
+    loop ci;regresa
+    salirrrr:
+ENDM
+limpiarcade MACRO cadena
+	 LEA SI, cadena
+    XOR CX, CX
+    MOV BX, 00
+wipe1:
+    MOV [SI], BX
+    INC CL
+    INC SI
+    CMP CL, 9
+    JB wipe1
+endm
+limpiarc1 MACRO cadena
+	 LEA SI, cadena
+    XOR CX, CX
+    MOV BX, 0
+wipe2:
+    MOV [SI], BX
+    INC CL
+    INC SI
+    CMP CL, cadena
+    JB wipe2
+endm
+limpiarc11 MACRO cadena
+	 LEA SI, cadena
+    XOR CX, CX
+    MOV BX, 0
+wi:
+    MOV [SI], BX
+    INC CL
+    INC SI
+    CMP CL, [cadena+1]
+    JB wi
+endm
+
+limpiarc2 MACRO cadena
+	 LEA SI, cadena
+    XOR CX, CX
+    MOV BX, 0
+wipe3:
+    MOV [SI], BX
+    INC CL
+    INC SI
+    CMP CL, [cadena+1]
+    JB wipe3
+endm
+
+capturar MACRO cadena,tam;cadena,tamaño,
+    mov cx,tam;numero de veces a repetir
+    mov si,00
+    cicl:;ciclo para capturar cadena
+        call read; captura desde teclado
+        cmp al,13; compara si es ENTER(13)
+        jz salirr; salta a la opcion 1 SI es igual
+        mov cadena[si],al; agrega letra al arreglo
+        inc si
+    loop cicl;regresa
+    salirr:
+ENDM
+
+posicionar2 MACRO x,y;posicionar punter
+    pusha
+        Mov ah,02h      ;COlor del cursor
+        mov dh,y;fila
+        mov dl,x;columna
+        Mov bh,00h      ;Pagina a imorimir
+        int 10h        ;Interrupci?n
+    popa
+ENDM
+
+txtclr2 MACRO fila,colu,colores
+    pusha
+        ;inc colores
+        MOV AH,06H
+        MOV AL,00h
+        MOV BH,colores
+        MOV CH,fila
+        MOV CL,colu
+	MOV DH,fila
+        MOV DL,colu
+        INT 10H
+    popa
+ENDM
+
+posicionar MACRO posicion;posicionar punter
+    pusha
+        Mov ah,02h      ;COlor del cursor
+        Mov dx,posicion ;Cursor renglon y columna|| 24f ,79c
+        Mov bh,00h      ;Pagina a imorimir
+        int 10h        ;Interrupci?n
+    popa
+ENDM
+
+columna MACRO regDXY
+    mov ax,regDXY
+    mov bl,8
+    div bl
+
+    endm
+
+fila MACRO regCXX
+mov ax,regCXX
+mov bl, 8
+div bl
+endm
+
+writeLetra macro t
+    mov ah, 02h
+    mov dl, t
+    int 21h
+endm
+
+scodigo SEGMENT 'CODE'
+Assume ss:spila, ds:sdatos, cs:scodigo
+
+limpia proc
+    mov ah,00
+    mov al,03h
+    int 10h
+    ret
+    limpia ENDP
+
+read PROC
+        MOV AH, 01H
+	  INT 21H
+        ret
+    read ENDP
+clrscr Proc;limpiar pantalla
+        mov ax,0600h
+        mov bh,02h;color
+        mov cx,0000h
+        mov dx,184fh;cubre toda la pantallla
+        int 10h
+        ret
+    clrscr ENDP
+
+pagina proc
+
+    MOV AX, 0600h
+    MOV BH, 01001111B
+    MOV CX, 0000h
+    MOV DX, 184Fh
+    INT 10h
+ret
+    pagina ENDP
+
+empezarRaton proc near
+        mov ax,00
+        int 33h
+        ret
+    empezarRaton endp
+
+mostrarRaton proc near
+        mov ax, 01h	
+        int 33h
+        ret
+    mostrarRaton endp    
+
+mouseIzq proc near
+	mov ax, 5
+        mov bx, 0
+        int 33h
+	ret
+    mouseIzq endp
+
+
+scodigo ENDS

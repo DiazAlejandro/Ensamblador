@@ -1,0 +1,10 @@
+TITLE "DO-WHILE"
+COMMENT &
+    EJEMPLO DE LA INSTRUCCIÓN DO-WHILE
+    --> INSTRUCCIÓN EN LENGUAJE DE ALTO NIVEL 
+        REPEAT
+            B:B+1
+        UNTIL (A>=B)
+&
+
+

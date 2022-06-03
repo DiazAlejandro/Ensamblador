@@ -1,0 +1,70 @@
+PRINT_COLOR MACRO CARACTER, LETRA
+    MOV AH,09H      
+    MOV AL,CARACTER 
+    MOV BL,LETRA    
+    MOV CX,1         
+    INT 10H        
+
+ENDM
+
+PRINT_C MACRO CARACTER 
+    MOV AH,02H
+    MOV DL,CARACTER
+    INT 21H
+ENDM
+
+PRINT MACRO CADENA
+    MOV AH,09H
+    LEA DX,CADENA
+    INT 21H
+ENDM
+
+CLIC MACRO
+    ESPERA:
+        MOV AX, 03H
+        INT 33H
+        CMP BX, 01
+        JE CLIC_IZQ
+        JMP ESPERA
+ENDM
+
+CONVERT_COORD MACRO COORDXY, REG
+    MOV AX, REG
+    MOV BL, 8
+    DIV BL
+    MOV COORDXY, AL
+ENDM
+
+INGRESA_CAD MACRO CADENA
+        LOCAL CICLO 
+        MOV BX, OFFSET CADENA
+        MOV SI,0     
+        CICLO: 
+            CALL LEER 
+            MOV BX[SI],AL
+            INC SI
+            CMP SI,4
+        JBE CICLO   
+ENDM
+
+PRINT_RC MACRO FILA, COLUMNA
+    MOV AH,02H      
+    MOV DH,FILA     
+    MOV DL,COLUMNA  
+    INT 10H
+ENDM
+
+.CODE 
+CLEAN PROC
+        MOV AH,0Fh  
+        int 10H  
+        MOV AH, 0
+        INT 10H
+        RET
+CLEAN ENDP
+    
+    LEER PROC
+        MOV AH,01H
+        INT 21H
+        RET
+    LEER ENDP

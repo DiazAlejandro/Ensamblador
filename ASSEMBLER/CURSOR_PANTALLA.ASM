@@ -1,0 +1,28 @@
+PRINT MACRO CADENA
+    MOV AH,09H
+    LEA DX,CADENA
+    INT 21H
+ENDM
+
+.286
+.MODEL SMALL 
+.STACK
+
+.DATA
+    LETRERO DB 'HOLA$'
+.CODE
+    MAIN PROC FAR 
+        MOV AX,@DATA
+        MOV DS,AX
+        
+        CENTRAR_CURSOR: 
+            MOV AH,02H ; FUNCIÓN PARA COLOCAR EL CURSOR
+            MOV DH,0CH  ; 12 EN DECIMAL - FILA
+            MOV DL,28H  ; 40 EN DECIMAL - COLUMNAS
+            INT 10H
+        
+        PRINT LETRERO
+    RET
+        
+    MAIN ENDP   
+END MAIN 

@@ -1,0 +1,44 @@
+PRINT MACRO CADENA
+    MOV AH,09H
+    LEA DX,CADENA
+    INT 21H
+ENDM
+
+.286
+.MODEL SMALL 
+.STACK
+
+.DATA
+    CADENA1 DB 'HOLA$'
+    CADENA2 DB 'BYE$'
+    SALTO   DB 0AH, 0DH, '$'
+    LETRERO DB 'CADENAS FINALES:$'
+
+.CODE
+    MAIN PROC FAR 
+        MOV AX,@DATA
+        MOV DS,AX
+        MOV ES,AX
+
+        PRINT CADENA1
+        PRINT SALTO
+        PRINT CADENA2
+        PRINT SALTO
+
+        ;MOVER EL CONTENIDO DE CADENA 2 A CADENA1 + DESPLEGAR C1
+
+        LEA SI,CADENA2
+        LEA DI,CADENA1
+
+        MOV CX,3
+        REP MOVSB 
+
+        PRINT LETRERO
+        PRINT CADENA2
+        PRINT SALTO
+        PRINT CADENA1
+
+    RET
+        
+    MAIN ENDP   
+END MAIN 
